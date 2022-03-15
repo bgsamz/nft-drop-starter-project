@@ -4,6 +4,7 @@ import { Program, Provider, web3 } from '@project-serum/anchor';
 import { MintLayout, TOKEN_PROGRAM_ID, Token } from '@solana/spl-token';
 import { sendTransactions } from './connection';
 import './CandyMachine.css';
+import CountdownTimer from "../CountdownTimer";
 import {
   candyMachineProgram,
   TOKEN_METADATA_PROGRAM_ID,
@@ -298,10 +299,6 @@ const CandyMachine = ({ walletAddress }) => {
     return [];
   };
 
-  useEffect(() => {
-    getCandyMachineState();
-  }, []);
-
   const getProvider = () => {
     const rpcHost = process.env.REACT_APP_SOLANA_RPC_HOST;
     const connection = new Connection(rpcHost);
@@ -372,10 +369,26 @@ const CandyMachine = ({ walletAddress }) => {
     });
   };
 
+  useEffect(() => {
+    getCandyMachineState();
+  }, []);
+
+  const renderDropTimer = () => {
+    const currentDate = new Date();
+    const dropDate = new Date(candyMachine.state.goLiveData * 1000);
+
+    if (currentDate < dropDate) {
+      console.log("Collection has not dropped yet!");
+      return <CountdownTimer dropDate={dropDate} />
+    }
+
+    return <p>{`Drop Date: ${candyMachine.state.goLiveDateTimeString}`}</p>
+  }
+
   return (
     candyMachine && (
       <div className="machine-container">
-        <p>{`Drop Date: ${candyMachine.state.goLiveDateTimeString}`}</p>
+        {renderDropTimer()}
         <p>{`Items Minted: ${candyMachine.state.itemsRedeemed} / ${candyMachine.state.itemsAvailable}`}</p>
         <button className="cta-button mint-button" onClick={mintToken}>
           Mint NFT
