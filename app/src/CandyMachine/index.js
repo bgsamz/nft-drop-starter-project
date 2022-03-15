@@ -386,13 +386,17 @@ const CandyMachine = ({ walletAddress }) => {
   }
 
   return (
-    candyMachine && (
+    candyMachine && candyMachine.state && (
       <div className="machine-container">
         {renderDropTimer()}
         <p>{`Items Minted: ${candyMachine.state.itemsRedeemed} / ${candyMachine.state.itemsAvailable}`}</p>
-        <button className="cta-button mint-button" onClick={mintToken}>
-          Mint NFT
-        </button>
+        {candyMachine.state.isSoldOut ? (
+          <p className="sub-text">Sold Out 🙊</p>
+        ) : (
+          <button className="cta-button mint-button" onClick={mintToken} disabled={!candyMachine.state.isActive}>
+            Mint NFT
+          </button>
+        )}
       </div>
     )
   );
